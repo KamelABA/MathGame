@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MathDesk - A casual math game where geometric shape customers need your help solving equations. Type answers, level up, and master math!">
+    <title>MathDesk — Solve. Level Up. Repeat.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- ===== PARTICLE CANVAS (background) ===== -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ===== MENU SCENE ===== -->
+    <div id="scene-menu" class="scene active">
+        <div class="menu-container">
+            <div class="menu-shapes-decoration">
+                <div class="floating-shape shape-circle"></div>
+                <div class="floating-shape shape-square"></div>
+                <div class="floating-shape shape-triangle"></div>
+                <div class="floating-shape shape-diamond"></div>
+            </div>
+            <div class="logo-section">
+                <h1 class="game-title">
+                    <span class="title-math">Math</span><span class="title-desk">Desk</span>
+                </h1>
+                <p class="game-tagline">Help shape customers solve their math problems!</p>
+            </div>
+            <div class="menu-buttons">
+                <button id="btn-play" class="btn btn-primary">
+                    <span class="btn-icon">▶</span> Play
+                </button>
+                <button id="btn-how-to" class="btn btn-secondary">
+                    <span class="btn-icon">❓</span> How to Play
+                </button>
+            </div>
+            <div class="menu-stats">
+                <div class="stat-card">
+                    <span class="stat-label">Best Score</span>
+                    <span class="stat-value" id="menu-best-score">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Best Level</span>
+                    <span class="stat-value" id="menu-best-level">1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HOW TO PLAY SCENE ===== -->
+    <div id="scene-tutorial" class="scene">
+        <div class="tutorial-container">
+            <h2 class="tutorial-title">How to Play</h2>
+            <div class="tutorial-steps">
+                <div class="tutorial-step">
+                    <div class="step-icon">🔷</div>
+                    <div class="step-text">
+                        <h3>Shape Customers Arrive</h3>
+                        <p>Geometric shape customers visit your desk one by one, each with a math problem.</p>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">⌨️</div>
+                    <div class="step-text">
+                        <h3>Type Your Answer</h3>
+                        <p>Solve the equation displayed on screen and type your answer. Press Enter to submit.</p>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">⚡</div>
+                    <div class="step-text">
+                        <h3>Build Combos</h3>
+                        <p>Answer correctly in a row to build combos and multiply your score!</p>
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">📈</div>
+                    <div class="step-text">
+                        <h3>Level Up</h3>
+                        <p>Every 5 correct answers levels you up. Problems get harder but rewards get bigger!</p>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-back-menu" class="btn btn-secondary">
+                <span class="btn-icon">←</span> Back to Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== GAME SCENE ===== -->
+    <div id="scene-game" class="scene">
+        <!-- Top HUD -->
+        <header class="game-hud">
+            <div class="hud-item hud-score">
+                <span class="hud-label">Score</span>
+                <span class="hud-value" id="hud-score">0</span>
+            </div>
+            <div class="hud-item hud-combo">
+                <span class="hud-label">Combo</span>
+                <span class="hud-value" id="hud-combo">×1</span>
+            </div>
+            <div class="hud-item hud-level">
+                <span class="hud-label">Level</span>
+                <span class="hud-value" id="hud-level">1</span>
+            </div>
+            <div class="hud-item hud-correct">
+                <span class="hud-label">Correct</span>
+                <span class="hud-value" id="hud-correct">0/5</span>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-area">
+            <!-- Customer Queue -->
+            <div class="queue-section">
+                <div class="queue-label">Queue</div>
+                <div class="customer-queue" id="customer-queue"></div>
+            </div>
+
+            <!-- Active Customer + Desk -->
+            <div class="desk-section">
+                <!-- Current Customer -->
+                <div class="customer-area" id="customer-area">
+                    <div class="customer-active" id="active-customer"></div>
+                    <div class="customer-speech" id="customer-speech">
+                        <p class="speech-text" id="speech-text">Help me solve this!</p>
+                    </div>
+                </div>
+
+                <!-- Computer Screen / Problem Display -->
+                <div class="computer-screen" id="computer-screen">
+                    <div class="screen-header">
+                        <div class="screen-dot red"></div>
+                        <div class="screen-dot yellow"></div>
+                        <div class="screen-dot green"></div>
+                        <span class="screen-title">Math Problem</span>
+                    </div>
+                    <div class="screen-body">
+                        <div class="problem-display" id="problem-display">
+                            <span class="problem-text" id="problem-text">7 + 5 = ?</span>
+                        </div>
+                        <div class="answer-section">
+                            <div class="input-wrapper" id="input-wrapper">
+                                <span class="input-prefix">ANS:</span>
+                                <input type="text" id="answer-input" class="answer-input" autocomplete="off" placeholder="Type answer..." autofocus>
+                            </div>
+                            <button id="btn-submit" class="btn-submit">↵</button>
+                        </div>
+                        <div class="timer-bar-container">
+                            <div class="timer-bar" id="timer-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desk Surface -->
+                <div class="desk-surface">
+                    <div class="desk-items">
+                        <div class="desk-item desk-coffee">☕</div>
+                        <div class="desk-item desk-plant">🪴</div>
+                        <div class="desk-item desk-pencil">✏️</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Toolbar -->
+        <footer class="game-toolbar">
+            <div class="upgrade-buttons">
+                <button class="btn-upgrade" id="btn-hint" title="Hint — shows first digit">
+                    <span class="upgrade-icon">💡</span>
+                    <span class="upgrade-label">Hint</span>
+                    <span class="upgrade-cost">×1</span>
+                </button>
+                <button class="btn-upgrade" id="btn-slow" title="Slow Time — +5 seconds">
+                    <span class="upgrade-icon">⏱</span>
+                    <span class="upgrade-label">Slow</span>
+                    <span class="upgrade-cost">×1</span>
+                </button>
+                <button class="btn-upgrade" id="btn-double" title="Double score for 3 questions">
+                    <span class="upgrade-icon">×2</span>
+                    <span class="upgrade-label">Double</span>
+                    <span class="upgrade-cost">×1</span>
+                </button>
+                <button class="btn-upgrade" id="btn-shield" title="Shield — blocks 1 wrong answer">
+                    <span class="upgrade-icon">🛡</span>
+                    <span class="upgrade-label">Shield</span>
+                    <span class="upgrade-cost">×1</span>
+                </button>
+            </div>
+            <button id="btn-pause" class="btn-pause" title="Pause">⏸</button>
+        </footer>
+
+        <!-- Feedback Overlay -->
+        <div class="feedback-overlay" id="feedback-overlay">
+            <span class="feedback-text" id="feedback-text"></span>
+        </div>
+
+        <!-- Level Up Overlay -->
+        <div class="levelup-overlay" id="levelup-overlay">
+            <div class="levelup-content">
+                <span class="levelup-icon">🎉</span>
+                <h2 class="levelup-title">Level Up!</h2>
+                <p class="levelup-level" id="levelup-level">Level 2</p>
+            </div>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div class="pause-overlay" id="pause-overlay">
+            <div class="pause-content">
+                <h2>⏸ Paused</h2>
+                <button id="btn-resume" class="btn btn-primary">Resume</button>
+                <button id="btn-quit" class="btn btn-secondary">Quit to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== GAME OVER SCENE ===== -->
+    <div id="scene-gameover" class="scene">
+        <div class="gameover-container">
+            <h2 class="gameover-title">Game Over!</h2>
+            <div class="gameover-stats">
+                <div class="go-stat">
+                    <span class="go-stat-label">Final Score</span>
+                    <span class="go-stat-value" id="go-score">0</span>
+                </div>
+                <div class="go-stat">
+                    <span class="go-stat-label">Level Reached</span>
+                    <span class="go-stat-value" id="go-level">1</span>
+                </div>
+                <div class="go-stat">
+                    <span class="go-stat-label">Problems Solved</span>
+                    <span class="go-stat-value" id="go-solved">0</span>
+                </div>
+                <div class="go-stat">
+                    <span class="go-stat-label">Best Combo</span>
+                    <span class="go-stat-value" id="go-combo">0</span>
+                </div>
+                <div class="go-stat">
+                    <span class="go-stat-label">Accuracy</span>
+                    <span class="go-stat-value" id="go-accuracy">0%</span>
+                </div>
+            </div>
+            <div class="go-new-best" id="go-new-best" style="display:none;">🏆 NEW BEST SCORE!</div>
+            <div class="gameover-buttons">
+                <button id="btn-retry" class="btn btn-primary">
+                    <span class="btn-icon">🔄</span> Play Again
+                </button>
+                <button id="btn-menu" class="btn btn-secondary">
+                    <span class="btn-icon">🏠</span> Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/math-gen.js"></script>
+    <script src="js/customers.js"></script>
+    <script src="js/score.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/upgrades.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
