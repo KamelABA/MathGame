@@ -93,13 +93,33 @@ class GameEngine {
             this._loadBestScores();
         });
 
-        // Upgrades
-        upgrades.init(
-            () => this._useHint(),
-            () => this._useSlowTime(),
-            () => this._useDoubleScore(),
-            () => this._useShield()
-        );
+        // Numeric Keypad
+        document.querySelectorAll('.numeric-keypad .key[data-value]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (this.isPaused || this.isProcessing) return;
+                audio.playClick();
+                this.answerInput.value += btn.dataset.value;
+                this.answerInput.focus();
+            });
+        });
+
+        document.getElementById('key-clear').addEventListener('click', () => {
+            if (this.isPaused || this.isProcessing) return;
+            audio.playClick();
+            this.answerInput.value = '';
+            this.answerInput.focus();
+        });
+
+        document.getElementById('key-delete').addEventListener('click', () => {
+            if (this.isPaused || this.isProcessing) return;
+            audio.playClick();
+            this.answerInput.value = this.answerInput.value.slice(0, -1);
+            this.answerInput.focus();
+        });
+
+        document.getElementById('key-submit-keypad').addEventListener('click', () => {
+            this.submitAnswer();
+        });
 
         // Keyboard shortcut for pause
         document.addEventListener('keydown', (e) => {
@@ -125,7 +145,6 @@ class GameEngine {
         mathGen.reset();
         customerQueue.reset();
         timer.reset();
-        upgrades.reset();
         this.missedCount = 0;
         this.isProcessing = false;
         this.isPaused = false;
@@ -235,7 +254,6 @@ class GameEngine {
 
         // Level up check
         if (result.leveled) {
-            upgrades.onLevelUp();
             await this._showLevelUp();
         }
 
@@ -245,23 +263,7 @@ class GameEngine {
 
     /** Handle wrong answer — instant game over */
     async _handleWrong() {
-        const result = scoreSystem.addWrong();
-
-        if (result.shielded) {
-            // Shield absorbed the hit — survive this time
-            this._showFeedback('🛡 SHIELDED!', 'combo');
-            audio.playCorrect();
-            this.answerInput.value = '';
-            this.inputWrapper.classList.remove('wrong');
-            this.isProcessing = false;
-            // Restart timer for same problem
-            const tier = mathGen.getEffectiveTier(scoreSystem.level);
-            const timeAllowed = mathGen.getTimeForTier(tier);
-            timer.start(timeAllowed, () => this._onTimerExpire());
-            this.answerInput.focus();
-            upgrades.updateStates();
-            return;
-        }
+        scoreSystem.addWrong();
 
         // Visual feedback
         this.inputWrapper.classList.add('wrong');
@@ -375,31 +377,6 @@ class GameEngine {
             scoreSystem.getBestLevel();
     }
 
-    /* === UPGRADE HANDLERS === */
-
-    _useHint() {
-        if (!this.currentProblem) return;
-        const answer = String(this.currentProblem.answer);
-        const hint = answer[0]; // Show first digit
-        this.answerInput.value = hint;
-        this.answerInput.focus();
-        upgrades.updateStates();
-    }
-
-    _useSlowTime() {
-        timer.addTime(5);
-        upgrades.updateStates();
-    }
-
-    _useDoubleScore() {
-        scoreSystem.doubleScoreRemaining = 3;
-        upgrades.updateStates();
-    }
-
-    _useShield() {
-        scoreSystem.shieldActive = true;
-        upgrades.updateStates();
-    }
 }
 
 // Global instance

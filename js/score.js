@@ -13,12 +13,6 @@ class ScoreSystem {
         this.correctInLevel = 0;
         this.correctNeededForLevelUp = 5;
 
-        // Double score power-up
-        this.doubleScoreRemaining = 0;
-
-        // Shield power-up
-        this.shieldActive = false;
-
         // HUD elements
         this.scoreEl = document.getElementById('hud-score');
         this.comboEl = document.getElementById('hud-combo');
@@ -34,8 +28,6 @@ class ScoreSystem {
         this.correctCount = 0;
         this.totalCount = 0;
         this.correctInLevel = 0;
-        this.doubleScoreRemaining = 0;
-        this.shieldActive = false;
         this.updateHUD();
     }
 
@@ -71,12 +63,6 @@ class ScoreSystem {
         // Multiplier
         points = Math.floor(points * this.getMultiplier());
 
-        // Double score upgrade
-        if (this.doubleScoreRemaining > 0) {
-            points *= 2;
-            this.doubleScoreRemaining--;
-        }
-
         this.score += points;
 
         // Check level up
@@ -95,12 +81,6 @@ class ScoreSystem {
     /** Penalize wrong answer */
     addWrong() {
         this.totalCount++;
-
-        // Shield blocks penalty
-        if (this.shieldActive) {
-            this.shieldActive = false;
-            return { penalty: 0, shielded: true };
-        }
 
         this.combo = 0;
         const penalty = 25;

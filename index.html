@@ -110,6 +110,7 @@
                 <span class="hud-label">Correct</span>
                 <span class="hud-value" id="hud-correct">0/5</span>
             </div>
+            <button id="btn-pause" class="btn-pause" title="Pause">⏸</button>
         </header>
 
         <!-- Main Game Area -->
@@ -145,7 +146,7 @@
                         <div class="answer-section">
                             <div class="input-wrapper" id="input-wrapper">
                                 <span class="input-prefix">ANS:</span>
-                                <input type="text" id="answer-input" class="answer-input" autocomplete="off" placeholder="Type answer..." autofocus>
+                                <input type="text" id="answer-input" class="answer-input" autocomplete="off" placeholder="Type answer..." autofocus inputmode="none">
                             </div>
                             <button id="btn-submit" class="btn-submit">↵</button>
                         </div>
@@ -153,6 +154,23 @@
                             <div class="timer-bar" id="timer-bar"></div>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Numeric Keypad (for touch/responsive) -->
+                <div class="numeric-keypad" id="numeric-keypad">
+                    <button class="key" data-value="1">1</button>
+                    <button class="key" data-value="2">2</button>
+                    <button class="key" data-value="3">3</button>
+                    <button class="key" data-value="4">4</button>
+                    <button class="key" data-value="5">5</button>
+                    <button class="key" data-value="6">6</button>
+                    <button class="key" data-value="7">7</button>
+                    <button class="key" data-value="8">8</button>
+                    <button class="key" data-value="9">9</button>
+                    <button class="key key-clear" id="key-clear">CLR</button>
+                    <button class="key" data-value="0">0</button>
+                    <button class="key key-delete" id="key-delete">DEL</button>
+                    <button class="key key-submit" id="key-submit-keypad">↵</button>
                 </div>
 
                 <!-- Desk Surface -->
@@ -166,32 +184,7 @@
             </div>
         </main>
 
-        <!-- Bottom Toolbar -->
-        <footer class="game-toolbar">
-            <div class="upgrade-buttons">
-                <button class="btn-upgrade" id="btn-hint" title="Hint — shows first digit">
-                    <span class="upgrade-icon">💡</span>
-                    <span class="upgrade-label">Hint</span>
-                    <span class="upgrade-cost">×1</span>
-                </button>
-                <button class="btn-upgrade" id="btn-slow" title="Slow Time — +5 seconds">
-                    <span class="upgrade-icon">⏱</span>
-                    <span class="upgrade-label">Slow</span>
-                    <span class="upgrade-cost">×1</span>
-                </button>
-                <button class="btn-upgrade" id="btn-double" title="Double score for 3 questions">
-                    <span class="upgrade-icon">×2</span>
-                    <span class="upgrade-label">Double</span>
-                    <span class="upgrade-cost">×1</span>
-                </button>
-                <button class="btn-upgrade" id="btn-shield" title="Shield — blocks 1 wrong answer">
-                    <span class="upgrade-icon">🛡</span>
-                    <span class="upgrade-label">Shield</span>
-                    <span class="upgrade-cost">×1</span>
-                </button>
-            </div>
-            <button id="btn-pause" class="btn-pause" title="Pause">⏸</button>
-        </footer>
+
 
         <!-- Feedback Overlay -->
         <div class="feedback-overlay" id="feedback-overlay">
@@ -262,7 +255,6 @@
     <script src="js/customers.js"></script>
     <script src="js/score.js"></script>
     <script src="js/timer.js"></script>
-    <script src="js/upgrades.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/main.js"></script>
 </body>
